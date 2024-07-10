@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>充电宝监控系统</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px 20px;
+      text-align: center;
+      width: 100%;
+    }
+    main {
+      max-width: 800px;
+      width: 100%;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+    .sensor-data {
+      margin-bottom: 20px;
+    }
+    .sensor-data h2 {
+      margin-bottom: 10px;
+    }
+    .data-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .data-list li {
+      margin-bottom: 10px;
+    }
+    .chart-container {
+      width: 100%;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>充电宝监控系统</h1>
+  </header>
+  <main>
+    <section class="sensor-data" id="battery-info">
+      <h2>充电宝数据</h2>
+      <ul class="data-list">
+        <li id="battery-level">电量：--%</li>
+        <li id="charge-time">充电时间：-- 小时</li>
+        <li id="discharge-time">放电时间：-- 小时</li>
+        <li id="temperature">温度：-- °C</li>
+      </ul>
+    </section>
+
+    <div class="chart-container">
+      <canvas id="battery-level-chart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="temperature-chart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="charge-time-chart"></canvas>
+    </div>
+  </main>
+
+  <!-- 引入 Chart.js 库 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // 模拟获取数据的函数
+    function fetchData() {
+      // 这里假设获取到的数据，实际情况下应从后端或传感器获取
+      const batteryData = {
+        batteryLevel: 75,
+        chargeTime: 5.5,
+        dischargeTime: 8.2,
+        temperature: 28
+      };
+
+      // 更新页面数据
+      const batteryLevelElement = document.getElementById('battery-level');
+      batteryLevelElement.textContent = `电量：${batteryData.batteryLevel}%`;
+
+      const chargeTimeElement = document.getElementById('charge-time');
+      chargeTimeElement.textContent = `充电时间：${batteryData.chargeTime} 小时`;
+
+      const dischargeTimeElement = document.getElementById('discharge-time');
+      dischargeTimeElement.textContent = `放电时间：${batteryData.dischargeTime} 小时`;
+
+      const temperatureElement = document.getElementById('temperature');
+      temperatureElement.textContent = `温度：${batteryData.temperature} °C`;
+
+      // 绘制饼状图
+      const batteryLevelChart = new Chart(document.getElementById('battery-level-chart').getContext('2d'), {
+        type: 'pie',
+        data: {
+          labels: ['剩余电量', '已用电量'],
+          datasets: [{
+            label: '电量分布',
+            data: [batteryData.batteryLevel, 100 - batteryData.batteryLevel],
+            backgroundColor: ['#36a2eb', '#ff6384']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // 绘制柱状图 - 温度
+      const temperatureChart = new Chart(document.getElementById('temperature-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: ['当前温度'],
+          datasets: [{
+            label: '温度 (°C)',
+            data: [batteryData.temperature],
+            backgroundColor: '#4bc0c0'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+
+      // 绘制柱状图 - 充电时间
+      const chargeTimeChart = new Chart(document.getElementById('charge-time-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: ['充电时间'],
+          datasets: [{
+            label: '充电时间 (小时)',
+            data: [batteryData.chargeTime],
+            backgroundColor: '#ffcd56'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+    }
+
+    // 初始加载数据
+    window.onload = fetchData;
+  </script>
+</body>
+</html>
